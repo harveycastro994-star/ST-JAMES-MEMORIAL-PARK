@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Visitor Dashboard | St. James Memorial Park</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body class="dashboard-body">
+
+<!-- =========================
+SIDEBAR
+========================= -->
+
+<aside class="sidebar">
+
+<div class="sidebar-logo">
+
+<i class="fa-solid fa-map-location-dot"></i>
+
+<h2>St. James</h2>
+
+<p>Memorial Park</p>
+
+</div>
+
+<ul>
+
+<li class="active">
+
+<a href="#">
+
+<i class="fa-solid fa-house"></i>
+
+Home
+
+</a>
+
+</li>
+
+<li>
+
+<a href="#">
+
+<i class="fa-solid fa-magnifying-glass-location"></i>
+
+Find Burial Site
+
+</a>
+
+</li>
+
+<li>
+
+<a href="#">
+
+<i class="fa-solid fa-map"></i>
+
+Interactive GIS Map
+
+</a>
+
+</li>
+
+<li>
+
+<a href="#">
+
+<i class="fa-solid fa-circle-info"></i>
+
+About
+
+</a>
+
+</li>
+
+<li>
+
+<a href="index.html">
+
+<i class="fa-solid fa-right-from-bracket"></i>
+
+Logout
+
+</a>
+
+</li>
+
+</ul>
+
+</aside>
+
+<!-- =========================
+MAIN CONTENT
+========================= -->
+
+<div class="main-content">
+
+<header class="topbar">
+
+<div class="search-box">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<input
+type="text"
+placeholder="Search deceased name...">
+
+</div>
+
+<div class="topbar-right">
+
+<div class="admin-profile">
+
+<img src="images/profile.png">
+
+<div>
+
+<h4>Visitor</h4>
+
+<span>Guest Access</span>
+
+</div>
+
+</div>
+
+</div>
+
+</header>
+
+<section class="page-header">
+
+<h1>
+
+Find Your Loved One
+
+</h1>
+
+<p>
+
+Search burial information and locate graves using the interactive GIS map.
+
+</p>
+
+</section>
+
+<!-- SEARCH CARD -->
+
+<section class="table-section">
+
+<h2>
+
+Search Burial Record
+
+</h2>
+
+<br>
+
+<div class="search-box">
+
+<i class="fa-solid fa-user"></i>
+
+<input
+type="text"
+placeholder="Enter the deceased person's full name">
+
+</div>
+
+<br>
+
+<button class="add-btn">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+Search
+
+</button>
+
+</section>
+
+<!-- GIS MAP -->
+
+<section class="gis-section">
+
+<div class="section-title">
+
+<h2>
+
+Interactive Cemetery Map
+
+</h2>
+
+</div>
+
+<div class="map-placeholder">
+
+<h2>
+
+Leaflet GIS Map
+
+</h2>
+
+<p>
+
+Visitors can locate graves by selecting a plot or searching for the deceased.
+
+</p>
+
+</div>
+
+</section>
+
+<!-- =========================
+BURIAL INFORMATION
+========================= -->
+
+<section class="gis-details">
+
+    <div class="coordinate-card">
+
+        <h3>
+            <i class="fa-solid fa-id-card"></i>
+            Burial Information
+        </h3>
+
+        <p><strong>Deceased Name:</strong> Clance Yhvan Cruz</p>
+        <p><strong>Block:</strong> Block A</p>
+        <p><strong>Plot Number:</strong> A-024</p>
+        <p><strong>Date of Burial:</strong> January 15, 2025</p>
+        <p><strong>Status:</strong> Occupied</p>
+
+        <button class="add-btn">
+
+            <i class="fa-solid fa-route"></i>
+
+            Navigate to Grave
+
+        </button>
+
+    </div>
+
+    <div class="legend-card">
+
+        <h3>
+
+            <i class="fa-solid fa-map"></i>
+
+            Cemetery Map Legend
+
+        </h3>
+
+        <ul>
+
+            <li>
+
+                <span class="legend available"></span>
+
+                Available Plot
+
+            </li>
+
+            <li>
+
+                <span class="legend occupied"></span>
+
+                Occupied Plot
+
+            </li>
+
+            <li>
+
+                <span class="legend reserved"></span>
+
+                Reserved Plot
+
+            </li>
+
+            <li>
+
+                <span class="legend pathway"></span>
+
+                Walkway / Road
+
+            </li>
+
+        </ul>
+
+    </div>
+
+</section>
+
+<!-- =========================
+RECENT SEARCHES
+========================= -->
+
+<section class="activity-section">
+
+<div class="activity-card">
+
+<h2>
+
+Recent Searches
+
+</h2>
+
+<div class="activity">
+
+<i class="fa-solid fa-clock-rotate-left"></i>
+
+<div>
+
+<h4>Clance Yhvan Cruz</h4>
+
+<p>Block A • Plot A-024</p>
+
+</div>
+
+<span>Today</span>
+
+</div>
+
+<div class="activity">
+
+<i class="fa-solid fa-clock-rotate-left"></i>
+
+<div>
+
+<h4>Clance Yhvan Cruz</h4>
+
+<p>Block C • Plot C-015</p>
+
+</div>
+
+<span>Yesterday</span>
+
+</div>
+
+<div class="activity">
+
+<i class="fa-solid fa-clock-rotate-left"></i>
+
+<div>
+
+<h4>Clance Yhvan Cruz</h4>
+
+<p>Block D • Plot D-010</p>
+
+</div>
+
+<span>2 Days Ago</span>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- =========================
+QUICK INFORMATION
+========================= -->
+
+<section class="table-section">
+
+<div class="table-header">
+
+<h2>
+
+Visitor Guidelines
+
+</h2>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Service</th>
+
+<th>Description</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>Search Burial</td>
+
+<td>Locate a loved one's burial site using their name.</td>
+
+</tr>
+
+<tr>
+
+<td>Interactive GIS Map</td>
+
+<td>View the exact burial location through the digital cemetery map.</td>
+
+</tr>
+
+<tr>
+
+<td>Navigation</td>
+
+<td>Receive directions from the cemetery entrance to the selected grave.</td>
+
+</tr>
+
+<tr>
+
+<td>Burial Information</td>
+
+<td>View block number, plot number, and burial details.</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
+<!-- =========================
+FOOTER
+========================= -->
+
+<footer class="footer">
+
+<p>
+
+© 2026 St. James Memorial Park
+
+|
+
+GIS-Based Burial Site Mapping and Record Management System
+
+</p>
+
+</footer>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Administrator Dashboard | St. James Memorial Park</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body class="dashboard-body">
+
+<!-- ======================
+SIDEBAR
+====================== -->
+
+<aside class="sidebar">
+
+<div class="sidebar-logo">
+
+<i class="fa-solid fa-map-location-dot"></i>
+
+<h2>St. James</h2>
+
+<p>Memorial Park</p>
+
+</div>
+
+<ul>
+
+<li class="active">
+
+<a href="#">
+
+<i class="fa-solid fa-house"></i>
+
+Dashboard
+
+</a>
+
+</li>
+
+<li>
+
+<a href="#">
+
+<i class="fa-solid fa-map"></i>
+
+Interactive GIS Map
+
+</a>
+
+</li>
+
+<li>
+
+<a href="#">
+
+<i class="fa-solid fa-table-list"></i>
+
+Burial Records
+
+</a>
+
+</li>
+
+<li>
+
+<a href="#">
+
+<i class="fa-solid fa-border-all"></i>
+
+Cemetery Blocks
+
+</a>
+
+</li>
+
+<li>
+
+<a href="#">
+
+<i class="fa-solid fa-users"></i>
+
+Users
+
+</a>
+
+</li>
+
+<li>
+
+<a href="#">
+
+<i class="fa-solid fa-chart-column"></i>
+
+Reports
+
+</a>
+
+</li>
+
+<li>
+
+<a href="index.html">
+
+<i class="fa-solid fa-right-from-bracket"></i>
+
+Logout
+
+</a>
+
+</li>
+
+</ul>
+
+</aside>
+
+<!-- ======================
+MAIN CONTENT
+====================== -->
+
+<div class="main-content">
+
+<!-- NAVBAR -->
+
+<header class="topbar">
+
+<div class="search-box">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<input
+type="text"
+placeholder="Search deceased, block or plot...">
+
+</div>
+
+<div class="topbar-right">
+
+<button>
+
+<i class="fa-solid fa-bell"></i>
+
+</button>
+
+<div class="admin-profile">
+
+<img src="images/profile.png">
+
+<div>
+
+<h4>Administrator</h4>
+
+<span>Online</span>
+
+</div>
+
+</div>
+
+</div>
+
+</header>
+
+<!-- PAGE TITLE -->
+
+<section class="page-header">
+
+<h1>
+
+Dashboard
+
+</h1>
+
+<p>
+
+Welcome back!
+
+Here's an overview of St. James Memorial Park.
+
+</p>
+
+</section>
+
+<!-- STATISTICS -->
+
+<section class="cards">
+
+<div class="stat-card">
+
+<div>
+
+<h2>1,248</h2>
+
+<p>Total Burials</p>
+
+</div>
+
+<i class="fa-solid fa-cross"></i>
+
+</div>
+
+<div class="stat-card">
+
+<div>
+
+<h2>965</h2>
+
+<p>Occupied Plots</p>
+
+</div>
+
+<i class="fa-solid fa-location-dot"></i>
+
+</div>
+
+<div class="stat-card">
+
+<div>
+
+<h2>283</h2>
+
+<p>Available Plots</p>
+
+</div>
+
+<i class="fa-solid fa-square"></i>
+
+</div>
+
+<div class="stat-card">
+
+<div>
+
+<h2>12</h2>
+
+<p>Cemetery Blocks</p>
+
+</div>
+
+<i class="fa-solid fa-border-all"></i>
+
+</div>
+
+<div class="stat-card">
+
+<div>
+
+<h2>327</h2>
+
+<p>Registered Visitors</p>
+
+</div>
+
+<i class="fa-solid fa-users"></i>
+
+</div>
+
+</section>
+
+<!-- GIS SECTION -->
+
+<section class="gis-section">
+
+<div class="section-title">
+
+<h2>
+
+Interactive GIS Map
+
+</h2>
+
+</div>
+
+<div class="map-placeholder">
+
+<h3>
+
+Leaflet Interactive Map
+
+</h3>
+
+<p>
+
+This area will display the cemetery map.
+
+Users can locate burial sites and administrators can manage plot information.
+
+</p>
+
+</div>
+
+</section>
+
+<!-- ======================
+GIS DETAILS
+====================== -->
+
+<section class="gis-details">
+
+    <div class="coordinate-card">
+
+        <h3>
+            <i class="fa-solid fa-location-crosshairs"></i>
+            Current Map Coordinates
+        </h3>
+
+        <p><strong>Latitude:</strong> 14.954621</p>
+        <p><strong>Longitude:</strong> 120.896542</p>
+
+        <span>
+            Coordinates automatically update as the administrator navigates the GIS map.
+        </span>
+
+    </div>
+
+    <div class="legend-card">
+
+        <h3>
+            <i class="fa-solid fa-map"></i>
+            Map Legend
+        </h3>
+
+        <ul>
+
+            <li>
+                <span class="legend available"></span>
+                Available Plot
+            </li>
+
+            <li>
+                <span class="legend occupied"></span>
+                Occupied Plot
+            </li>
+
+            <li>
+                <span class="legend reserved"></span>
+                Reserved Plot
+            </li>
+
+            <li>
+                <span class="legend pathway"></span>
+                Pathway
+            </li>
+
+        </ul>
+
+    </div>
+
+</section>
+
+<!-- ======================
+RECENT ACTIVITY
+====================== -->
+
+<section class="activity-section">
+
+<div class="activity-card">
+
+<h2>
+
+Recent Burial Activity
+
+</h2>
+
+<div class="activity">
+
+<i class="fa-solid fa-user-plus"></i>
+
+<div>
+
+<h4>New Burial Record Added</h4>
+
+<p>Clance Yhvan Cruz • Block A • Plot 24</p>
+
+</div>
+
+<span>Today</span>
+
+</div>
+
+<div class="activity">
+
+<i class="fa-solid fa-pen"></i>
+
+<div>
+
+<h4>Burial Record Updated</h4>
+
+<p>Clance Yhvan Cruz • Block C • Plot 15</p>
+
+</div>
+
+<span>2 hrs ago</span>
+
+</div>
+
+<div class="activity">
+
+<i class="fa-solid fa-map-location-dot"></i>
+
+<div>
+
+<h4>GIS Map Updated</h4>
+
+<p>Block B Layout Modified</p>
+
+</div>
+
+<span>Yesterday</span>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ======================
+BURIAL RECORDS TABLE
+====================== -->
+
+<section class="table-section">
+
+<div class="table-header">
+
+<h2>Recent Burial Records</h2>
+
+<button class="add-btn">
+
+<i class="fa-solid fa-plus"></i>
+
+Add Burial Record
+
+</button>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Record ID</th>
+
+<th>Deceased Name</th>
+
+<th>Block</th>
+
+<th>Plot</th>
+
+<th>Date of Burial</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>001</td>
+
+<td>Clance Yhvan Cruz</td>
+
+<td>A</td>
+
+<td>24</td>
+
+<td>January 15, 2025</td>
+
+<td><span class="status occupied">Occupied</span></td>
+
+<td>
+
+<button>Edit</button>
+
+<button>View</button>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>002</td>
+
+<td>Maria Santos</td>
+
+<td>C</td>
+
+<td>15</td>
+
+<td>March 8, 2024</td>
+
+<td><span class="status occupied">Occupied</span></td>
+
+<td>
+
+<button>Edit</button>
+
+<button>View</button>
+
+</td>
+
+</tr>
+
+<tr>
+
+<td>003</td>
+
+<td>Clance Yhvan Cruz</td>
+
+<td>D</td>
+
+<td>10</td>
+
+<td>June 22, 2023</td>
+
+<td><span class="status reserved">Reserved</span></td>
+
+<td>
+
+<button>Edit</button>
+
+<button>View</button>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
+<!-- ======================
+FOOTER
+====================== -->
+
+<footer class="footer">
+
+<p>
+
+© 2026 St. James Memorial Park
+
+|
+
+GIS-Based Burial Site Mapping and Record Management System
+
+</p>
+
+</footer>
+
+</div>
+
+</body>
+
+</html>
