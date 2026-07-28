@@ -8,7 +8,7 @@
 
 <title>Administrator Dashboard | St. James Memorial Park</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -38,87 +38,59 @@ SIDEBAR
 <ul>
 
 <li class="active">
-
-<a href="#">
-
-<i class="fa-solid fa-house"></i>
-
-Dashboard
-
-</a>
-
+    <a href="#dashboard">
+        <i class="fa-solid fa-house"></i>
+        Dashboard
+    </a>
 </li>
 
 <li>
-
-<a href="#">
-
-<i class="fa-solid fa-map"></i>
-
-Interactive GIS Map
-
-</a>
-
+    <a href="#gis">
+        <i class="fa-solid fa-map"></i>
+        Interactive GIS Map
+    </a>
 </li>
 
 <li>
-
-<a href="#">
-
-<i class="fa-solid fa-table-list"></i>
-
-Burial Records
-
-</a>
-
+    <a href="#records">
+        <i class="fa-solid fa-table-list"></i>
+        Burial Records
+    </a>
 </li>
 
 <li>
-
-<a href="#">
-
-<i class="fa-solid fa-border-all"></i>
-
-Cemetery Blocks
-
-</a>
-
+    <a href="#blocks">
+        <i class="fa-solid fa-border-all"></i>
+        Cemetery Blocks
+    </a>
 </li>
 
 <li>
-
-<a href="#">
-
-<i class="fa-solid fa-users"></i>
-
-Users
-
-</a>
-
+    <a href="#users">
+        <i class="fa-solid fa-users"></i>
+        Users
+    </a>
 </li>
 
 <li>
-
-<a href="#">
-
-<i class="fa-solid fa-chart-column"></i>
-
-Reports
-
-</a>
-
+    <a href="#reports">
+        <i class="fa-solid fa-chart-column"></i>
+        Reports
+    </a>
 </li>
 
 <li>
+    <a href="#reservation">
+        <i class="fa-solid fa-calendar-check"></i>
+        Reservation Requests
+    </a>
+</li>
 
-<a href="index.html">
-
-<i class="fa-solid fa-right-from-bracket"></i>
-
-Logout
-
-</a>
-
+<li>
+    <a href="index.html">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        Logout
+    </a>
 </li>
 
 </ul>
@@ -173,7 +145,7 @@ placeholder="Search deceased, block or plot...">
 
 <!-- PAGE TITLE -->
 
-<section class="page-header">
+<section id="dashboard" class="page-header">
 
 <h1>
 
@@ -267,9 +239,91 @@ Here's an overview of St. James Memorial Park.
 
 </section>
 
+<!-- reservation management -->
+
+<section id="reservation" class="reservation-management">
+
+<h2>Reservation Requests</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+
+<th>Applicant</th>
+
+<th>Lot</th>
+
+<th>Block</th>
+
+<th>Date</th>
+
+<th>Time</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>RSV-001</td>
+
+<td>Juan Dela Cruz</td>
+
+<td>A-105</td>
+
+<td>Block A</td>
+
+<td>July 25, 2026</td>
+
+<td>10:00 AM</td>
+
+<td>
+
+<span class="pending">
+
+Pending
+
+</span>
+
+</td>
+
+<td>
+
+<button class="approve-btn">
+
+Approve
+
+</button>
+
+<button class="reject-btn">
+
+Reject
+
+</button>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
 <!-- GIS SECTION -->
 
-<section class="gis-section">
+<section id="gis" class="gis-section">
 
 <div class="section-title">
 
@@ -305,7 +359,7 @@ Users can locate burial sites and administrators can manage plot information.
 GIS DETAILS
 ====================== -->
 
-<section class="gis-details">
+<section id="gis" class="gis-section">
 
     <div class="coordinate-card">
 
@@ -428,7 +482,7 @@ Recent Burial Activity
 BURIAL RECORDS TABLE
 ====================== -->
 
-<section class="table-section">
+<section id="records" class="table-section">
 
 <div class="table-header">
 
@@ -549,6 +603,174 @@ Add Burial Record
 </section>
 
 <!-- ======================
+CEMETERY BLOCKS
+====================== -->
+
+<section id="blocks" class="table-section">
+
+<div class="table-header">
+
+<h2>Cemetery Blocks</h2>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Block</th>
+<th>Total Lots</th>
+<th>Occupied</th>
+<th>Available</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>Block A</td>
+<td>100</td>
+<td>85</td>
+<td>15</td>
+
+</tr>
+
+<tr>
+
+<td>Block B</td>
+<td>120</td>
+<td>90</td>
+<td>30</td>
+
+</tr>
+
+<tr>
+
+<td>Block C</td>
+<td>150</td>
+<td>120</td>
+<td>30</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
+
+<!-- ======================
+USERS
+====================== -->
+
+<section id="users" class="table-section">
+
+<div class="table-header">
+
+<h2>Registered Users</h2>
+
+</div>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Name</th>
+<th>Email</th>
+<th>Role</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>Juan Dela Cruz</td>
+<td>juan@gmail.com</td>
+<td>Visitor</td>
+
+</tr>
+
+<tr>
+
+<td>Administrator</td>
+<td>admin@stjames.com</td>
+<td>Administrator</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
+
+<!-- ======================
+REPORTS
+====================== -->
+
+<section id="reports" class="table-section">
+
+<div class="table-header">
+
+<h2>Reports Summary</h2>
+
+</div>
+
+<div class="cards">
+
+<div class="stat-card">
+
+<div>
+
+<h2>15</h2>
+
+<p>Daily Reservations</p>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div>
+
+<h2>45</h2>
+
+<p>Monthly Burials</p>
+
+</div>
+
+</div>
+
+<div class="stat-card">
+
+<div>
+
+<h2>95%</h2>
+
+<p>Lot Occupancy</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ======================
 FOOTER
 ====================== -->
 
@@ -567,6 +789,44 @@ GIS-Based Burial Site Mapping and Record Management System
 </footer>
 
 </div>
+
+<script>
+
+document.querySelectorAll(".approve-btn").forEach(button => {
+
+    button.addEventListener("click", function(){
+
+        const row = this.closest("tr");
+        const status = row.querySelector(".pending");
+
+        if(status){
+
+            status.innerHTML = "Approved";
+            status.classList.remove("pending");
+            status.classList.add("approved");
+
+        }
+
+    });
+
+});
+
+document.querySelectorAll(".reject-btn").forEach(button => {
+
+    button.addEventListener("click", function(){
+
+        const row = this.closest("tr");
+        const status = row.querySelector("span");
+
+        status.innerHTML = "Rejected";
+        status.classList.remove("pending");
+        status.classList.add("rejected");
+
+    });
+
+});
+
+</script>
 
 </body>
 
