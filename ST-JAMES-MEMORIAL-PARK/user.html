@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,7 +9,7 @@
 
 <title>Visitor Dashboard | St. James Memorial Park</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -38,63 +39,45 @@ SIDEBAR
 <ul>
 
 <li class="active">
-
-<a href="#">
-
-<i class="fa-solid fa-house"></i>
-
-Home
-
-</a>
-
+    <a href="#home">
+        <i class="fa-solid fa-house"></i>
+        Home
+    </a>
 </li>
 
 <li>
-
-<a href="#">
-
-<i class="fa-solid fa-magnifying-glass-location"></i>
-
-Find Burial Site
-
-</a>
-
+    <a href="#search">
+        <i class="fa-solid fa-magnifying-glass-location"></i>
+        Find Burial Site
+    </a>
 </li>
 
 <li>
-
-<a href="#">
-
-<i class="fa-solid fa-map"></i>
-
-Interactive GIS Map
-
-</a>
-
+    <a href="#gis">
+        <i class="fa-solid fa-map"></i>
+        Interactive GIS Map
+    </a>
 </li>
 
 <li>
-
-<a href="#">
-
-<i class="fa-solid fa-circle-info"></i>
-
-About
-
-</a>
-
+    <a href="#reservation">
+        <i class="fa-solid fa-calendar-plus"></i>
+        Reservation
+    </a>
 </li>
 
 <li>
+    <a href="#about">
+        <i class="fa-solid fa-circle-info"></i>
+        About
+    </a>
+</li>
 
-<a href="index.html">
-
-<i class="fa-solid fa-right-from-bracket"></i>
-
-Logout
-
-</a>
-
+<li>
+    <a href="index.html">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        Logout
+    </a>
 </li>
 
 </ul>
@@ -139,7 +122,7 @@ placeholder="Search deceased name...">
 
 </header>
 
-<section class="page-header">
+<section id="home" class="page-header">
 
 <h1>
 
@@ -157,7 +140,7 @@ Search burial information and locate graves using the interactive GIS map.
 
 <!-- SEARCH CARD -->
 
-<section class="table-section">
+<section id="search" class="table-section">
 
 <h2>
 
@@ -189,9 +172,65 @@ Search
 
 </section>
 
+<!-- RESERVATION  -->
+
+<section id="reservation" class="reservation-status">
+
+<h2>My Reservation Status</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Reservation ID</th>
+
+<th>Lot</th>
+
+<th>Date</th>
+
+<th>Time</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>RSV-001</td>
+
+<td>Block A - Lot A105</td>
+
+<td>July 25, 2026</td>
+
+<td>10:00 AM</td>
+
+<td>
+
+<span class="pending">
+
+Pending Approval
+
+</span>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+
 <!-- GIS MAP -->
 
-<section class="gis-section">
+<section id="gis" class="gis-section">
 
 <div class="section-title">
 
@@ -433,6 +472,28 @@ Visitor Guidelines
 </tbody>
 
 </table>
+
+</section>
+
+<!-- =========================
+ABOUT
+========================= -->
+
+<section id="about" class="table-section">
+
+<div class="table-header">
+
+<h2>About St. James Memorial Park</h2>
+
+</div>
+
+<p>
+
+The GIS-Based Burial Site Mapping and Record Management System was developed to help visitors easily locate burial sites while assisting administrators in managing cemetery records efficiently.
+
+This system integrates GIS technology with digital record management to improve cemetery services.
+
+</p>
 
 </section>
 
