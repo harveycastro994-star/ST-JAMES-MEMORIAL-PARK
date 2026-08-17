@@ -161,6 +161,44 @@ const loginButton=document.getElementById("loginButton");
 
 loginPage.style.display="none";
 
+const USER_STORAGE_KEY="stjamesUserAccounts";
+
+function getStoredUsers(){
+
+try{
+
+const saved=JSON.parse(localStorage.getItem(USER_STORAGE_KEY)||"null");
+
+if(Array.isArray(saved)&&saved.length>0){
+
+return saved;
+
+}
+
+}catch(error){
+
+console.warn("Unable to read user accounts:", error);
+
+}
+
+return[
+
+{id:1,name:"Administrator",username:"admin",password:"admin123",role:"admin"},
+
+{id:2,name:"Visitor",username:"visitor",password:"visitor123",role:"visitor"}
+
+];
+
+}
+
+function authenticateUser(username,password,role){
+
+const normalizedUsername=(username||"").trim().toLowerCase();
+
+return getStoredUsers().find((account)=>account.username.toLowerCase()===normalizedUsername && account.password===password && account.role===role);
+
+}
+
 function showAdmin(){
 
 rolePage.style.display="none";
@@ -178,7 +216,7 @@ e.preventDefault();
 const username=document.getElementById("username").value;
 const password=document.getElementById("password").value;
 
-if(username==="admin" && password==="admin123"){
+if(authenticateUser(username,password,"admin")){
 
 window.location.href="admin.html";
 
@@ -209,7 +247,7 @@ e.preventDefault();
 const username=document.getElementById("username").value;
 const password=document.getElementById("password").value;
 
-if(username==="visitor" && password==="visitor123"){
+if(authenticateUser(username,password,"visitor")){
 
 window.location.href="user.html";
 

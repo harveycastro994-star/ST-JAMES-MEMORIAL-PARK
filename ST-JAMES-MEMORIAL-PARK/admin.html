@@ -8,12 +8,14 @@
 
 <title>Administrator Dashboard | St. James Memorial Park</title>
 
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="style.css">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 </head>
 
@@ -38,59 +40,99 @@ SIDEBAR
 <ul>
 
 <li class="active">
-    <a href="#dashboard">
-        <i class="fa-solid fa-house"></i>
-        Dashboard
-    </a>
+
+<a href="#">
+
+<i class="fa-solid fa-house"></i>
+
+Dashboard
+
+</a>
+
 </li>
 
 <li>
-    <a href="#gis">
-        <i class="fa-solid fa-map"></i>
-        Interactive GIS Map
-    </a>
+
+<a href="#gis-section" id="sidebarMapLink">
+
+<i class="fa-solid fa-map"></i>
+
+Interactive GIS Map
+
+</a>
+
 </li>
 
 <li>
-    <a href="#records">
-        <i class="fa-solid fa-table-list"></i>
-        Burial Records
-    </a>
+
+<a href="burialrecords.html">
+
+<i class="fa-solid fa-table-list"></i>
+
+Burial Records
+
+</a>
+
 </li>
 
 <li>
-    <a href="#blocks">
-        <i class="fa-solid fa-border-all"></i>
-        Cemetery Blocks
-    </a>
+
+<a href="#">
+
+<i class="fa-solid fa-border-all"></i>
+
+Cemetery Blocks
+
+</a>
+
 </li>
 
 <li>
-    <a href="#users">
-        <i class="fa-solid fa-users"></i>
-        Users
-    </a>
+
+<a href="usercreation.html">
+
+<i class="fa-solid fa-user-plus"></i>
+
+User
+
+</a>
+
 </li>
 
 <li>
-    <a href="#reports">
-        <i class="fa-solid fa-chart-column"></i>
-        Reports
-    </a>
+
+<a href="reservationsadmin.html">
+
+<i class="fa-solid fa-bookmark"></i>
+
+Reservations
+
+</a>
+
 </li>
 
 <li>
-    <a href="#reservation">
-        <i class="fa-solid fa-calendar-check"></i>
-        Reservation Requests
-    </a>
+
+<a href="#">
+
+<i class="fa-solid fa-chart-column"></i>
+
+Reports
+
+</a>
+
 </li>
 
 <li>
-    <a href="index.html">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        Logout
-    </a>
+
+<a href="index.html">
+
+<i class="fa-solid fa-right-from-bracket"></i>
+
+Logout
+
+</a>
+
 </li>
 
 </ul>
@@ -112,6 +154,7 @@ MAIN CONTENT
 <i class="fa-solid fa-magnifying-glass"></i>
 
 <input
+id="adminSearchInput"
 type="text"
 placeholder="Search deceased, block or plot...">
 
@@ -145,7 +188,7 @@ placeholder="Search deceased, block or plot...">
 
 <!-- PAGE TITLE -->
 
-<section id="dashboard" class="page-header">
+<section class="page-header">
 
 <h1>
 
@@ -171,7 +214,7 @@ Here's an overview of St. James Memorial Park.
 
 <div>
 
-<h2>1,248</h2>
+<h2 id="statsTotalBurials">0</h2>
 
 <p>Total Burials</p>
 
@@ -185,7 +228,7 @@ Here's an overview of St. James Memorial Park.
 
 <div>
 
-<h2>965</h2>
+<h2 id="statsOccupiedPlots">0</h2>
 
 <p>Occupied Plots</p>
 
@@ -199,13 +242,27 @@ Here's an overview of St. James Memorial Park.
 
 <div>
 
-<h2>283</h2>
+<h2 id="statsAvailablePlots">0</h2>
 
 <p>Available Plots</p>
 
 </div>
 
 <i class="fa-solid fa-square"></i>
+
+</div>
+
+<div class="stat-card">
+
+<div>
+
+<h2 id="statsReservedPlots">0</h2>
+
+<p>Reserved Plots</p>
+
+</div>
+
+<i class="fa-solid fa-bookmark"></i>
 
 </div>
 
@@ -227,7 +284,7 @@ Here's an overview of St. James Memorial Park.
 
 <div>
 
-<h2>327</h2>
+<h2 id="statsRegisteredVisitors">0</h2>
 
 <p>Registered Visitors</p>
 
@@ -239,91 +296,9 @@ Here's an overview of St. James Memorial Park.
 
 </section>
 
-<!-- reservation management -->
-
-<section id="reservation" class="reservation-management">
-
-<h2>Reservation Requests</h2>
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>ID</th>
-
-<th>Applicant</th>
-
-<th>Lot</th>
-
-<th>Block</th>
-
-<th>Date</th>
-
-<th>Time</th>
-
-<th>Status</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr>
-
-<td>RSV-001</td>
-
-<td>Juan Dela Cruz</td>
-
-<td>A-105</td>
-
-<td>Block A</td>
-
-<td>July 25, 2026</td>
-
-<td>10:00 AM</td>
-
-<td>
-
-<span class="pending">
-
-Pending
-
-</span>
-
-</td>
-
-<td>
-
-<button class="approve-btn">
-
-Approve
-
-</button>
-
-<button class="reject-btn">
-
-Reject
-
-</button>
-
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</section>
-
 <!-- GIS SECTION -->
 
-<section id="gis" class="gis-section">
+<section class="gis-section" id="gis-section">
 
 <div class="section-title">
 
@@ -337,19 +312,7 @@ Interactive GIS Map
 
 <div class="map-placeholder">
 
-<h3>
-
-Leaflet Interactive Map
-
-</h3>
-
-<p>
-
-This area will display the cemetery map.
-
-Users can locate burial sites and administrators can manage plot information.
-
-</p>
+<div id="adminMap" aria-label="Administrator cemetery map"></div>
 
 </div>
 
@@ -359,7 +322,7 @@ Users can locate burial sites and administrators can manage plot information.
 GIS DETAILS
 ====================== -->
 
-<section id="gis" class="gis-section">
+<section class="gis-details">
 
     <div class="coordinate-card">
 
@@ -368,8 +331,8 @@ GIS DETAILS
             Current Map Coordinates
         </h3>
 
-        <p><strong>Latitude:</strong> 14.954621</p>
-        <p><strong>Longitude:</strong> 120.896542</p>
+        <p><strong>Latitude:</strong> <span id="adminLatitude">14.954621</span></p>
+        <p><strong>Longitude:</strong> <span id="adminLongitude">120.896542</span></p>
 
         <span>
             Coordinates automatically update as the administrator navigates the GIS map.
@@ -426,349 +389,13 @@ Recent Burial Activity
 
 </h2>
 
-<div class="activity">
-
-<i class="fa-solid fa-user-plus"></i>
-
-<div>
-
-<h4>New Burial Record Added</h4>
-
-<p>Clance Yhvan Cruz • Block A • Plot 24</p>
-
-</div>
-
-<span>Today</span>
-
-</div>
-
-<div class="activity">
-
-<i class="fa-solid fa-pen"></i>
-
-<div>
-
-<h4>Burial Record Updated</h4>
-
-<p>Clance Yhvan Cruz • Block C • Plot 15</p>
-
-</div>
-
-<span>2 hrs ago</span>
-
-</div>
-
-<div class="activity">
-
-<i class="fa-solid fa-map-location-dot"></i>
-
-<div>
-
-<h4>GIS Map Updated</h4>
-
-<p>Block B Layout Modified</p>
-
-</div>
-
-<span>Yesterday</span>
-
-</div>
+<div id="recentBurialActivityList"></div>
 
 </div>
 
 </section>
 
-<!-- ======================
-BURIAL RECORDS TABLE
-====================== -->
 
-<section id="records" class="table-section">
-
-<div class="table-header">
-
-<h2>Recent Burial Records</h2>
-
-<button class="add-btn">
-
-<i class="fa-solid fa-plus"></i>
-
-Add Burial Record
-
-</button>
-
-</div>
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Record ID</th>
-
-<th>Deceased Name</th>
-
-<th>Block</th>
-
-<th>Plot</th>
-
-<th>Date of Burial</th>
-
-<th>Status</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr>
-
-<td>001</td>
-
-<td>Clance Yhvan Cruz</td>
-
-<td>A</td>
-
-<td>24</td>
-
-<td>January 15, 2025</td>
-
-<td><span class="status occupied">Occupied</span></td>
-
-<td>
-
-<button>Edit</button>
-
-<button>View</button>
-
-</td>
-
-</tr>
-
-<tr>
-
-<td>002</td>
-
-<td>Maria Santos</td>
-
-<td>C</td>
-
-<td>15</td>
-
-<td>March 8, 2024</td>
-
-<td><span class="status occupied">Occupied</span></td>
-
-<td>
-
-<button>Edit</button>
-
-<button>View</button>
-
-</td>
-
-</tr>
-
-<tr>
-
-<td>003</td>
-
-<td>Clance Yhvan Cruz</td>
-
-<td>D</td>
-
-<td>10</td>
-
-<td>June 22, 2023</td>
-
-<td><span class="status reserved">Reserved</span></td>
-
-<td>
-
-<button>Edit</button>
-
-<button>View</button>
-
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</section>
-
-<!-- ======================
-CEMETERY BLOCKS
-====================== -->
-
-<section id="blocks" class="table-section">
-
-<div class="table-header">
-
-<h2>Cemetery Blocks</h2>
-
-</div>
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Block</th>
-<th>Total Lots</th>
-<th>Occupied</th>
-<th>Available</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr>
-
-<td>Block A</td>
-<td>100</td>
-<td>85</td>
-<td>15</td>
-
-</tr>
-
-<tr>
-
-<td>Block B</td>
-<td>120</td>
-<td>90</td>
-<td>30</td>
-
-</tr>
-
-<tr>
-
-<td>Block C</td>
-<td>150</td>
-<td>120</td>
-<td>30</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</section>
-
-
-<!-- ======================
-USERS
-====================== -->
-
-<section id="users" class="table-section">
-
-<div class="table-header">
-
-<h2>Registered Users</h2>
-
-</div>
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Name</th>
-<th>Email</th>
-<th>Role</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr>
-
-<td>Juan Dela Cruz</td>
-<td>juan@gmail.com</td>
-<td>Visitor</td>
-
-</tr>
-
-<tr>
-
-<td>Administrator</td>
-<td>admin@stjames.com</td>
-<td>Administrator</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</section>
-
-
-<!-- ======================
-REPORTS
-====================== -->
-
-<section id="reports" class="table-section">
-
-<div class="table-header">
-
-<h2>Reports Summary</h2>
-
-</div>
-
-<div class="cards">
-
-<div class="stat-card">
-
-<div>
-
-<h2>15</h2>
-
-<p>Daily Reservations</p>
-
-</div>
-
-</div>
-
-<div class="stat-card">
-
-<div>
-
-<h2>45</h2>
-
-<p>Monthly Burials</p>
-
-</div>
-
-</div>
-
-<div class="stat-card">
-
-<div>
-
-<h2>95%</h2>
-
-<p>Lot Occupancy</p>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
 
 <!-- ======================
 FOOTER
@@ -790,42 +417,86 @@ GIS-Based Burial Site Mapping and Record Management System
 
 </div>
 
+<div id="addRecordModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="recordModalTitle">Add Burial Record</h3>
+            <button class="modal-close" id="closeAddRecordModal" type="button">×</button>
+        </div>
+        <form id="addBurialRecordForm" class="record-form">
+            <input type="hidden" id="recordId" value="">
+            <label>
+                Deceased Name
+                <input type="text" id="recordName">
+            </label>
+            <label>
+                Block
+                <input type="text" id="recordBlock" required>
+            </label>
+            <label>
+                Plot
+                <input type="text" id="recordPlot" required>
+            </label>
+            <label>
+                Date of Burial
+                <input type="date" id="recordDate" required>
+            </label>
+            <label>
+                Status
+                <select id="recordStatus">
+                    <option value="Occupied">Occupied</option>
+                    <option value="Reserved">Reserved</option>
+                    <option value="Available">Available</option>
+                </select>
+            </label>
+            <label>
+                Grave Condition
+                <select id="recordCleanliness">
+                    <option value="Clean">Clean</option>
+                    <option value="Dirty">Dirty</option>
+                </select>
+            </label>
+            <label>
+                Latitude
+                <input type="number" step="any" id="recordLatitude" value="14.954621">
+            </label>
+            <label>
+                Longitude
+                <input type="number" step="any" id="recordLongitude" value="120.896542">
+            </label>
+            <div class="form-actions">
+                <button type="submit" class="add-btn" id="saveRecordBtn">Save Record</button>
+                <button type="button" class="secondary-btn" id="cancelAddRecordBtn">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
 <script>
+    const USER_STORAGE_KEY = "stjamesUserAccounts";
 
-document.querySelectorAll(".approve-btn").forEach(button => {
-
-    button.addEventListener("click", function(){
-
-        const row = this.closest("tr");
-        const status = row.querySelector(".pending");
-
-        if(status){
-
-            status.innerHTML = "Approved";
-            status.classList.remove("pending");
-            status.classList.add("approved");
-
+    function updateRegisteredVisitorsCount() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(USER_STORAGE_KEY) || "null");
+            const users = Array.isArray(saved)
+                ? saved
+                : [
+                    { id: 1, name: "Administrator", username: "admin", password: "admin123", role: "admin" },
+                    { id: 2, name: "Visitor", username: "visitor", password: "visitor123", role: "visitor" }
+                ];
+            const visitorCount = users.filter((user) => user.role === "visitor").length;
+            const statsElement = document.getElementById("statsRegisteredVisitors");
+            if (statsElement) {
+                statsElement.textContent = visitorCount;
+            }
+        } catch (error) {
+            console.warn("Unable to update registered visitors count:", error);
         }
+    }
 
-    });
-
-});
-
-document.querySelectorAll(".reject-btn").forEach(button => {
-
-    button.addEventListener("click", function(){
-
-        const row = this.closest("tr");
-        const status = row.querySelector("span");
-
-        status.innerHTML = "Rejected";
-        status.classList.remove("pending");
-        status.classList.add("rejected");
-
-    });
-
-});
-
+    document.addEventListener("DOMContentLoaded", updateRegisteredVisitorsCount);
 </script>
 
 </body>

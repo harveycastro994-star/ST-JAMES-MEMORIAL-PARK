@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,12 +8,14 @@
 
 <title>Visitor Dashboard | St. James Memorial Park</title>
 
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="style.css">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 </head>
 
@@ -39,45 +40,75 @@ SIDEBAR
 <ul>
 
 <li class="active">
-    <a href="#home">
-        <i class="fa-solid fa-house"></i>
-        Home
-    </a>
+
+<a href="#">
+
+<i class="fa-solid fa-house"></i>
+
+Home
+
+</a>
+
 </li>
 
 <li>
-    <a href="#search">
-        <i class="fa-solid fa-magnifying-glass-location"></i>
-        Find Burial Site
-    </a>
+
+<a href="#">
+
+<i class="fa-solid fa-magnifying-glass-location"></i>
+
+Find Burial Site
+
+</a>
+
 </li>
 
 <li>
-    <a href="#gis">
-        <i class="fa-solid fa-map"></i>
-        Interactive GIS Map
-    </a>
+
+<a href="#">
+
+<i class="fa-solid fa-map"></i>
+
+Interactive GIS Map
+
+</a>
+
 </li>
 
 <li>
-    <a href="#reservation">
-        <i class="fa-solid fa-calendar-plus"></i>
-        Reservation
-    </a>
+
+<a href="reservationuser.html">
+
+<i class="fa-solid fa-bookmark"></i>
+
+Reservations
+
+</a>
+
 </li>
 
 <li>
-    <a href="#about">
-        <i class="fa-solid fa-circle-info"></i>
-        About
-    </a>
+
+<a href="#">
+
+<i class="fa-solid fa-circle-info"></i>
+
+About
+
+</a>
+
 </li>
 
 <li>
-    <a href="index.html">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        Logout
-    </a>
+
+<a href="index.html">
+
+<i class="fa-solid fa-right-from-bracket"></i>
+
+Logout
+
+</a>
+
 </li>
 
 </ul>
@@ -104,6 +135,12 @@ placeholder="Search deceased name...">
 
 <div class="topbar-right">
 
+<button class="notification-btn" id="notificationButton" type="button">
+    <i class="fa-solid fa-bell"></i>
+    Notifications
+    <span id="notificationBadge" class="notification-badge"></span>
+</button>
+
 <div class="admin-profile">
 
 <img src="images/profile.png">
@@ -122,7 +159,7 @@ placeholder="Search deceased name...">
 
 </header>
 
-<section id="home" class="page-header">
+<section class="page-header">
 
 <h1>
 
@@ -140,7 +177,7 @@ Search burial information and locate graves using the interactive GIS map.
 
 <!-- SEARCH CARD -->
 
-<section id="search" class="table-section">
+<section class="table-section">
 
 <h2>
 
@@ -155,6 +192,7 @@ Search Burial Record
 <i class="fa-solid fa-user"></i>
 
 <input
+id="burialSearchInput"
 type="text"
 placeholder="Enter the deceased person's full name">
 
@@ -162,7 +200,7 @@ placeholder="Enter the deceased person's full name">
 
 <br>
 
-<button class="add-btn">
+<button class="add-btn" id="searchBurialBtn" type="button">
 
 <i class="fa-solid fa-magnifying-glass"></i>
 
@@ -172,65 +210,9 @@ Search
 
 </section>
 
-<!-- RESERVATION  -->
-
-<section id="reservation" class="reservation-status">
-
-<h2>My Reservation Status</h2>
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Reservation ID</th>
-
-<th>Lot</th>
-
-<th>Date</th>
-
-<th>Time</th>
-
-<th>Status</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr>
-
-<td>RSV-001</td>
-
-<td>Block A - Lot A105</td>
-
-<td>July 25, 2026</td>
-
-<td>10:00 AM</td>
-
-<td>
-
-<span class="pending">
-
-Pending Approval
-
-</span>
-
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</section>
-
 <!-- GIS MAP -->
 
-<section id="gis" class="gis-section">
+<section class="gis-section">
 
 <div class="section-title">
 
@@ -244,17 +226,7 @@ Interactive Cemetery Map
 
 <div class="map-placeholder">
 
-<h2>
-
-Leaflet GIS Map
-
-</h2>
-
-<p>
-
-Visitors can locate graves by selecting a plot or searching for the deceased.
-
-</p>
+<div id="map" aria-label="Interactive cemetery map"></div>
 
 </div>
 
@@ -273,11 +245,11 @@ BURIAL INFORMATION
             Burial Information
         </h3>
 
-        <p><strong>Deceased Name:</strong> Clance Yhvan Cruz</p>
-        <p><strong>Block:</strong> Block A</p>
-        <p><strong>Plot Number:</strong> A-024</p>
-        <p><strong>Date of Burial:</strong> January 15, 2025</p>
-        <p><strong>Status:</strong> Occupied</p>
+        <p><strong>Deceased Name:</strong> <span id="burialName">Clance Yhvan Cruz</span></p>
+        <p><strong>Block:</strong> <span id="burialBlock">Block A</span></p>
+        <p><strong>Plot Number:</strong> <span id="burialPlot">A-024</span></p>
+        <p><strong>Date of Burial:</strong> <span id="burialDate">January 15, 2025</span></p>
+        <p><strong>Status:</strong> <span id="burialStatus">Occupied</span></p>
 
         <button class="add-btn">
 
@@ -353,53 +325,27 @@ Recent Searches
 
 </h2>
 
-<div class="activity">
-
-<i class="fa-solid fa-clock-rotate-left"></i>
-
-<div>
-
-<h4>Clance Yhvan Cruz</h4>
-
-<p>Block A • Plot A-024</p>
+<div id="recentSearchesList"></div>
 
 </div>
 
-<span>Today</span>
+</section>
 
-</div>
+<!-- =========================
+GRAVE CONDITION UPDATES
+========================= -->
 
-<div class="activity">
+<section class="notification-section" id="conditionNotificationSection">
 
-<i class="fa-solid fa-clock-rotate-left"></i>
+<div class="notification-card">
 
-<div>
+<h2>
 
-<h4>Clance Yhvan Cruz</h4>
+Condition Updates
 
-<p>Block C • Plot C-015</p>
+</h2>
 
-</div>
-
-<span>Yesterday</span>
-
-</div>
-
-<div class="activity">
-
-<i class="fa-solid fa-clock-rotate-left"></i>
-
-<div>
-
-<h4>Clance Yhvan Cruz</h4>
-
-<p>Block D • Plot D-010</p>
-
-</div>
-
-<span>2 Days Ago</span>
-
-</div>
+<div id="conditionNotificationList"></div>
 
 </div>
 
@@ -476,28 +422,6 @@ Visitor Guidelines
 </section>
 
 <!-- =========================
-ABOUT
-========================= -->
-
-<section id="about" class="table-section">
-
-<div class="table-header">
-
-<h2>About St. James Memorial Park</h2>
-
-</div>
-
-<p>
-
-The GIS-Based Burial Site Mapping and Record Management System was developed to help visitors easily locate burial sites while assisting administrators in managing cemetery records efficiently.
-
-This system integrates GIS technology with digital record management to improve cemetery services.
-
-</p>
-
-</section>
-
-<!-- =========================
 FOOTER
 ========================= -->
 
@@ -516,6 +440,9 @@ GIS-Based Burial Site Mapping and Record Management System
 </footer>
 
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
 
 </body>
 

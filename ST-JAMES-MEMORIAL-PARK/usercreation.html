@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Account Creation | St. James Memorial Park</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <h2>St. James</h2>
+            <p>Memorial Park</p>
+        </div>
+        <ul>
+            <li>
+                <a href="admin.html">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="admin.html#gis-section">
+                    <i class="fa-solid fa-map"></i>
+                    Interactive GIS Map
+                </a>
+            </li>
+            <li>
+                <a href="burialrecords.html">
+                    <i class="fa-solid fa-table-list"></i>
+                    Burial Records
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fa-solid fa-border-all"></i>
+                    Cemetery Blocks
+                </a>
+            </li>
+            <li class="active">
+                <a href="usercreation.html">
+                    <i class="fa-solid fa-user-plus"></i>
+                    User
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fa-solid fa-chart-column"></i>
+                    Reports
+                </a>
+            </li>
+            <li>
+                <a href="index.html">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Logout
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search users...">
+            </div>
+            <div class="topbar-right">
+                <button>
+                    <i class="fa-solid fa-bell"></i>
+                </button>
+                <div class="admin-profile">
+                    <img src="images/profile.png" alt="Admin profile">
+                    <div>
+                        <h4>Administrator</h4>
+                        <span>Online</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="page-header">
+            <h1>User Account Creation</h1>
+            <p>Create and manage accounts for administrators and visitors.</p>
+        </section>
+
+        <section class="table-section">
+            <div class="table-header">
+                <h2>Create New Account</h2>
+            </div>
+            <form id="accountForm" class="record-form">
+                <label>
+                    Full Name
+                    <input type="text" id="fullName" placeholder="Enter full name" required>
+                </label>
+                <label>
+                    Username
+                    <input type="text" id="username" placeholder="Enter username" required>
+                </label>
+                <label>
+                    Password
+                    <input type="password" id="password" placeholder="Enter password" required>
+                </label>
+                <label>
+                    Account Role
+                    <select id="role" required>
+                        <option value="">Select role</option>
+                        <option value="admin">Administrator</option>
+                        <option value="visitor">Visitor</option>
+                    </select>
+                </label>
+                <div class="form-actions">
+                    <button type="submit" class="add-btn">Create Account</button>
+                    <button type="reset" class="secondary-btn">Clear</button>
+                </div>
+                <p id="formMessage" class="form-message"></p>
+            </form>
+        </section>
+
+        <section class="table-section" style="margin-top:24px;">
+            <div class="table-header">
+                <h2>Existing Accounts</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="accountTableBody"></tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        const USER_STORAGE_KEY = "stjamesUserAccounts";
+
+        function getStoredUsers() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(USER_STORAGE_KEY) || "null");
+                if (Array.isArray(saved) && saved.length > 0) {
+                    return saved;
+                }
+            } catch (error) {
+                console.warn("Unable to read user accounts:", error);
+            }
+
+            return [
+                { id: 1, name: "Administrator", username: "admin", password: "admin123", role: "admin" },
+                { id: 2, name: "Visitor", username: "visitor", password: "visitor123", role: "visitor" }
+            ];
+        }
+
+        function saveStoredUsers(users) {
+            localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(users));
+        }
+
+        function renderAccounts() {
+            const accounts = getStoredUsers();
+            const body = document.getElementById("accountTableBody");
+            body.innerHTML = "";
+
+            if (!accounts.length) {
+                body.innerHTML = '<tr><td colspan="4" class="empty-state">No accounts created yet.</td></tr>';
+                return;
+            }
+
+            accounts.forEach((account) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${account.name}</td>
+                    <td>${account.username}</td>
+                    <td>${account.role === "admin" ? "Administrator" : "Visitor"}</td>
+                    <td>
+                        <button type="button" class="table-action-btn delete-btn" onclick="deleteAccount(${account.id})">Delete</button>
+                    </td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        function deleteAccount(id) {
+            const updatedAccounts = getStoredUsers().filter((account) => account.id !== id);
+            saveStoredUsers(updatedAccounts);
+            renderAccounts();
+            const message = document.getElementById("formMessage");
+            message.textContent = "Account deleted.";
+            message.className = "form-message success";
+        }
+
+        document.getElementById("accountForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const fullName = document.getElementById("fullName").value.trim();
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+            const role = document.getElementById("role").value;
+            const message = document.getElementById("formMessage");
+
+            if (!fullName || !username || !password || !role) {
+                message.textContent = "Please complete all fields.";
+                message.className = "form-message error";
+                return;
+            }
+
+            const accounts = getStoredUsers();
+            const usernameExists = accounts.some((account) => account.username.toLowerCase() === username.toLowerCase());
+
+            if (usernameExists) {
+                message.textContent = "That username already exists.";
+                message.className = "form-message error";
+                return;
+            }
+
+            accounts.push({
+                id: Date.now(),
+                name: fullName,
+                username,
+                password,
+                role
+            });
+
+            saveStoredUsers(accounts);
+            renderAccounts();
+            this.reset();
+            message.textContent = "Account created successfully.";
+            message.className = "form-message success";
+        });
+
+        renderAccounts();
+    </script>
+</body>
+</html>

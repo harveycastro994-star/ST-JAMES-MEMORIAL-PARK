@@ -1,0 +1,57 @@
+[
+    {
+        "id": "001",
+        "name": "Clance Yhvan Cruz",
+        "block": "Block A",
+        "plot": "A-024",
+        "date": "January 15, 2025",
+        "status": "Occupied",
+        "cleanliness": "Clean",
+        "lat": 14.5995,
+        "lng": 120.9842
+    },
+    {
+        "id": "002",
+        "name": "Maria Elena Santos",
+        "block": "Block C",
+        "plot": "C-015",
+        "date": "February 3, 2025",
+        "status": "Occupied",
+        "cleanliness": "Clean",
+        "lat": 14.6004,
+        "lng": 120.9831
+    },
+    {
+        "id": "003",
+        "name": "Juan Dela Cruz",
+        "block": "Block D",
+        "plot": "D-010",
+        "date": "March 12, 2025",
+        "status": "Reserved",
+        "cleanliness": "Clean",
+        "lat": 14.5988,
+        "lng": 120.9853
+    },
+    {
+        "id": "004",
+        "name": "Rosa B. Fernandez",
+        "block": "Block B",
+        "plot": "B-007",
+        "date": "April 18, 2025",
+        "status": "Available",
+        "cleanliness": "Clean",
+        "lat": 14.6011,
+        "lng": 120.986
+    },
+    {
+        "id": "005",
+        "name": "Emilio R. Torres",
+        "block": "Block E",
+        "plot": "E-021",
+        "date": "May 5, 2025",
+        "status": "Occupied",
+        "cleanliness": "Clean",
+        "lat": 14.5979,
+        "lng": 120.9838
+    }
+]
