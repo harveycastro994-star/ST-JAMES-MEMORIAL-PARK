@@ -55,6 +55,7 @@ const defaultBurialRecords = [
 ];
 
 let burialRecords = [];
+let editingRecordId = null;
 
 function openBurialDatabase() {
     return new Promise((resolve) => {
@@ -621,6 +622,11 @@ function searchBurialRecord() {
 
     updateBurialDetails(record);
 
+    // Ensure the cemetery/user map recenters to the found record
+    if (record && typeof focusBurialOnMap === 'function') {
+        focusBurialOnMap(record);
+    }
+
     if (record) {
         addRecentSearch(record);
     } else {
@@ -636,6 +642,10 @@ function toggleAddRecordModal(show) {
     }
 
     modal.classList.toggle("hidden", !show);
+    if (!show) {
+        // ensure we remove any temporary listeners/state when closing
+        try { resetRecordForm(); } catch (e) {}
+    }
 }
 
 function normalizeDateValue(value) {
@@ -1072,6 +1082,10 @@ function resetRecordForm() {
     cleanlinessInput.disabled = false;
     latitudeInput.disabled = false;
     longitudeInput.disabled = false;
+    // remove live listeners when resetting
+    latitudeInput.oninput = null;
+    longitudeInput.oninput = null;
+    editingRecordId = null;
     updateNameFieldRequirement(statusInput.value);
 }
 
@@ -1106,6 +1120,10 @@ function openRecordModal(mode, record) {
         latitudeInput.value = record.lat;
         longitudeInput.value = record.lng;
         updateNameFieldRequirement(record.status);
+        // live update the admin map when coordinates are changed in the form
+        editingRecordId = record.id;
+        latitudeInput.oninput = () => onRecordCoordinateInputChange(record.id);
+        longitudeInput.oninput = () => onRecordCoordinateInputChange(record.id);
     } else if (mode === "view" && record) {
         modalTitle.textContent = "Burial Record Details";
         saveButton.textContent = "Close";
@@ -1130,6 +1148,32 @@ function openRecordModal(mode, record) {
     }
 
     toggleAddRecordModal(true);
+}
+
+function isValidLatitude(lat) {
+    return typeof lat === 'number' && isFinite(lat) && lat >= -90 && lat <= 90;
+}
+
+function isValidLongitude(lng) {
+    return typeof lng === 'number' && isFinite(lng) && lng >= -180 && lng <= 180;
+}
+
+function onRecordCoordinateInputChange(recordId) {
+    if (!adminMap) return;
+    const latVal = parseFloat(document.getElementById('recordLatitude').value);
+    const lngVal = parseFloat(document.getElementById('recordLongitude').value);
+    if (!isValidLatitude(latVal) || !isValidLongitude(lngVal)) return;
+
+    // Update the admin focus marker so admin can preview position immediately
+    if (editingRecordId && editingRecordId === recordId) {
+        if (adminMarker) {
+            try { adminMarker.setLatLng([latVal, lngVal]); } catch (e) {}
+            adminMarker.bindPopup(`<strong>Preview</strong><br>${document.getElementById('recordName').value || ''} • ${document.getElementById('recordBlock').value || ''} • ${document.getElementById('recordPlot').value || ''}`);
+        } else {
+            adminMarker = L.marker([latVal, lngVal]).addTo(adminMap);
+        }
+        adminMap.setView([latVal, lngVal], 18);
+    }
 }
 
 async function deleteBurialRecord(recordId) {
@@ -1192,8 +1236,10 @@ async function handleAddBurialRecord(event) {
             existingRecord.date = formatDisplayDate(date);
             existingRecord.status = status;
             existingRecord.cleanliness = cleanliness;
-            existingRecord.lat = latitude || existingRecord.lat;
-            existingRecord.lng = longitude || existingRecord.lng;
+            if (!Number.isNaN(latitude) && !Number.isNaN(longitude)) {
+                existingRecord.lat = latitude;
+                existingRecord.lng = longitude;
+            }
 
             if (oldCondition !== cleanliness) {
                 addGraveConditionNotification(existingRecord, oldCondition, cleanliness);
@@ -1208,8 +1254,8 @@ async function handleAddBurialRecord(event) {
             date: formatDisplayDate(date),
             status,
             cleanliness,
-            lat: latitude || 14.954621,
-            lng: longitude || 120.896542
+            lat: !Number.isNaN(latitude) ? latitude : 14.954621,
+            lng: !Number.isNaN(longitude) ? longitude : 120.896542
         });
     }
 
@@ -1300,11 +1346,20 @@ function initializeAdminDashboard() {
     }
 
     if (searchInput) {
-        searchInput.addEventListener("input", (event) => filterAdminRecords(event.target.value));
+        searchInput.addEventListener("input", (event) => {
+            const q = event.target.value;
+            filterAdminRecords(q);
+            const matched = findMatchingRecord(q || "");
+            if (matched) {
+                focusAdminRecord(matched);
+            }
+        });
         searchInput.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {
                 event.preventDefault();
                 filterAdminRecords(searchInput.value);
+                const matched = findMatchingRecord(searchInput.value || "");
+                if (matched) focusAdminRecord(matched);
             }
         });
     }
