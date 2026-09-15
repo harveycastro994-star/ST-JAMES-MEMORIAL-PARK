@@ -856,6 +856,8 @@ RESPONSIVE
 .modal-content{
     background:#fff;
     width:min(560px, 92vw);
+    max-height:calc(100vh - 32px);
+    overflow-y:auto;
     border-radius:16px;
     padding:24px;
     box-shadow:0 15px 40px rgba(0,0,0,.2);
@@ -879,6 +881,9 @@ RESPONSIVE
 .record-form{
     display:grid;
     gap:14px;
+    max-height:calc(100vh - 150px);
+    overflow-y:auto;
+    padding-right:8px;
 }
 
 .record-form label{
