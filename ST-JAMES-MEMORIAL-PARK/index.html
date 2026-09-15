@@ -218,6 +218,7 @@ const password=document.getElementById("password").value;
 
 if(authenticateUser(username,password,"admin")){
 
+sessionStorage.setItem("stjamesCurrentUser", JSON.stringify({ username: username.trim().toLowerCase(), role: "admin" }));
 window.location.href="admin.html";
 
 }else{
@@ -249,6 +250,12 @@ const password=document.getElementById("password").value;
 
 if(authenticateUser(username,password,"visitor")){
 
+const account = authenticateUser(username, password, "visitor");
+sessionStorage.setItem("stjamesCurrentUser", JSON.stringify({
+username: account.username,
+role: account.role,
+grave: account.grave || null
+}));
 window.location.href="user.html";
 
 }else{

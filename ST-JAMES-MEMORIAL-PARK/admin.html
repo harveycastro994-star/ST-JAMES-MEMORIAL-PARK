@@ -77,18 +77,6 @@ Burial Records
 
 <li>
 
-<a href="#">
-
-<i class="fa-solid fa-border-all"></i>
-
-Cemetery Blocks
-
-</a>
-
-</li>
-
-<li>
-
 <a href="usercreation.html">
 
 <i class="fa-solid fa-user-plus"></i>
@@ -162,9 +150,10 @@ placeholder="Search deceased, block or plot...">
 
 <div class="topbar-right">
 
-<button>
+<button id="notificationButton" type="button" aria-label="View recent burial activity">
 
 <i class="fa-solid fa-bell"></i>
+<span id="notificationBadge" class="notification-badge" aria-live="polite"></span>
 
 </button>
 
@@ -334,6 +323,12 @@ GIS DETAILS
         <p><strong>Latitude:</strong> <span id="adminLatitude">14.954621</span></p>
         <p><strong>Longitude:</strong> <span id="adminLongitude">120.896542</span></p>
 
+        <button type="button" class="add-btn" id="useCurrentLocationBtn">
+            <i class="fa-solid fa-location-crosshairs"></i>
+            Use My GPS Location
+        </button>
+        <p id="gpsAccuracy" aria-live="polite"></p>
+
         <span>
             Coordinates automatically update as the administrator navigates the GIS map.
         </span>
@@ -473,6 +468,7 @@ GIS-Based Burial Site Mapping and Record Management System
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 <script>
     const USER_STORAGE_KEY = "stjamesUserAccounts";

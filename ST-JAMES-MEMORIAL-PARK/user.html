@@ -230,6 +230,14 @@ Interactive Cemetery Map
 
 </div>
 
+<div class="map-controls">
+    <button type="button" class="add-btn" id="useUserCurrentLocationBtn">
+        <i class="fa-solid fa-location-crosshairs"></i>
+        Use My GPS Location
+    </button>
+    <span id="userGpsAccuracy" aria-live="polite"></span>
+</div>
+
 </section>
 
 <!-- =========================
@@ -250,14 +258,17 @@ BURIAL INFORMATION
         <p><strong>Plot Number:</strong> <span id="burialPlot">A-024</span></p>
         <p><strong>Date of Burial:</strong> <span id="burialDate">January 15, 2025</span></p>
         <p><strong>Status:</strong> <span id="burialStatus">Occupied</span></p>
+        <p><strong>Current GPS Latitude:</strong> <span id="userLatitude">--</span></p>
+        <p><strong>Current GPS Longitude:</strong> <span id="userLongitude">--</span></p>
 
-        <button class="add-btn">
+        <button class="add-btn" id="navigateToGraveBtn" type="button">
 
             <i class="fa-solid fa-route"></i>
 
             Navigate to Grave
 
         </button>
+        <p id="navigationStatus" aria-live="polite"></p>
 
     </div>
 
@@ -442,6 +453,7 @@ GIS-Based Burial Site Mapping and Record Management System
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 
 </body>

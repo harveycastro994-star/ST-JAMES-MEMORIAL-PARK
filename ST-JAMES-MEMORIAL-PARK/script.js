@@ -1,3 +1,10 @@
+const supabaseUrl = "https://ouzfgihgrlssdsqupxit.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91emZnaWhncmxzc2RzcXVweGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4Mzc1NTAsImV4cCI6MjEwNDQxMzU1MH0.HSOvDFT_a6N7jk4e_-xlZkXqQfyCnIYyHGS2T07s1K0";
+
+const supabaseClient = window.supabase
+    ? window.supabase.createClient(supabaseUrl, supabaseKey)
+    : null;
+
 function login() {
 
     const role = document.getElementById("role").value;
@@ -151,6 +158,53 @@ async function getBurialRecordsFromFile() {
     }
 }
 
+async function getBurialRecordsFromSupabase() {
+    if (!supabaseClient) {
+        return null;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("burial_records")
+        .select("*")
+        .order("id");
+
+    if (error) {
+        console.warn("Unable to load burial records from Supabase:", error.message);
+        return null;
+    }
+
+    return Array.isArray(data) ? data : null;
+}
+
+async function saveBurialRecordsToSupabase(records) {
+    if (!supabaseClient) {
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("burial_records")
+        .upsert(records, { onConflict: "id" });
+
+    if (error) {
+        console.warn("Unable to save burial records to Supabase:", error.message);
+    }
+}
+
+async function deleteBurialRecordFromSupabase(recordId) {
+    if (!supabaseClient) {
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("burial_records")
+        .delete()
+        .eq("id", recordId);
+
+    if (error) {
+        console.warn("Unable to delete burial record from Supabase:", error.message);
+    }
+}
+
 function downloadBurialDatabaseFile() {
     const blob = new Blob([JSON.stringify(burialRecords, null, 4)], { type: "application/json" });
     const link = document.createElement("a");
@@ -164,6 +218,13 @@ function downloadBurialDatabaseFile() {
 
 async function loadBurialRecords() {
     try {
+        const supabaseRecords = await getBurialRecordsFromSupabase();
+        if (Array.isArray(supabaseRecords) && supabaseRecords.length > 0) {
+            await saveBurialRecordsToDB(supabaseRecords);
+            localStorage.setItem(BURIAL_DB_KEY, JSON.stringify(supabaseRecords));
+            return supabaseRecords;
+        }
+
         const dbRecords = await getBurialRecordsFromDB();
         if (Array.isArray(dbRecords) && dbRecords.length > 0) {
             return dbRecords;
@@ -207,14 +268,21 @@ async function saveBurialRecords() {
     }
 
     await saveBurialRecordsToDB(burialRecords);
+    await saveBurialRecordsToSupabase(burialRecords);
 }
 
 const RECENT_SEARCHES_KEY = "recentBurialSearches";
 const GRAVE_CONDITION_NOTIFICATIONS_KEY = "graveConditionNotifications";
+const CURRENT_USER_KEY = "stjamesCurrentUser";
+const RECENT_BURIAL_ACTIVITY_KEY = "recentBurialActivityLog";
 let cemeteryMap = null;
 let currentMarker = null;
+let userGpsMarker = null;
+let selectedBurialRecord = null;
+let navigationRouteLayer = null;
 let adminMap = null;
 let adminMarker = null;
+let adminGpsMarker = null;
 let cemeteryMarkersLayer = null;
 let adminMarkersLayer = null;
 let cemeteryLocationMarker = null;
@@ -254,11 +322,63 @@ function saveGraveConditionNotifications(notifications) {
     }
 }
 
-function addGraveConditionNotification(record, oldCondition, newCondition) {
+async function getGraveConditionNotificationsFromSupabase() {
+    if (!supabaseClient) {
+        return null;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("grave_condition_notifications")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.warn("Unable to load condition notifications from Supabase:", error.message);
+        return null;
+    }
+
+    return data.map((item) => ({
+        id: item.id,
+        name: item.name,
+        block: item.block,
+        plot: item.plot,
+        oldCondition: item.old_condition,
+        newCondition: item.new_condition,
+        timestamp: item.created_at ? new Date(item.created_at).getTime() : Date.now()
+    }));
+}
+
+async function saveGraveConditionNotificationToSupabase(notification) {
+    if (!supabaseClient) {
+        return false;
+    }
+
+    const { error } = await supabaseClient
+        .from("grave_condition_notifications")
+        .upsert({
+            id: notification.id,
+            name: notification.name,
+            block: notification.block,
+            plot: notification.plot,
+            old_condition: notification.oldCondition,
+            new_condition: notification.newCondition,
+            created_at: new Date(notification.timestamp).toISOString()
+        }, { onConflict: "id" });
+
+    if (error) {
+        console.warn("Unable to save condition notification to Supabase:", error.message);
+        return false;
+    }
+
+    return true;
+}
+
+async function addGraveConditionNotification(record, oldCondition, newCondition) {
     const notifications = getGraveConditionNotifications();
     const notification = {
         id: `${record.id}-${Date.now()}`,
         name: record.name,
+        block: record.block,
         plot: record.plot,
         oldCondition,
         newCondition,
@@ -267,16 +387,37 @@ function addGraveConditionNotification(record, oldCondition, newCondition) {
 
     const updatedNotifications = [notification, ...notifications].slice(0, 5);
     saveGraveConditionNotifications(updatedNotifications);
+    await saveGraveConditionNotificationToSupabase(notification);
 }
 
-function renderConditionNotifications() {
+function getCurrentUser() {
+    try {
+        return JSON.parse(sessionStorage.getItem(CURRENT_USER_KEY) || "null");
+    } catch (error) {
+        return null;
+    }
+}
+
+function notificationBelongsToCurrentUser(notification) {
+    const currentUser = getCurrentUser();
+    if (!currentUser || currentUser.role !== "visitor" || !currentUser.grave) {
+        return currentUser?.role !== "visitor";
+    }
+
+    return notification.block === currentUser.grave.block
+        && notification.plot === currentUser.grave.plot;
+}
+
+async function renderConditionNotifications() {
     const listElement = document.getElementById("conditionNotificationList");
     const badgeElement = document.getElementById("notificationBadge");
     if (!listElement) {
         return;
     }
 
-    const notifications = getGraveConditionNotifications();
+    const supabaseNotifications = await getGraveConditionNotificationsFromSupabase();
+    const notifications = (supabaseNotifications || getGraveConditionNotifications())
+        .filter(notificationBelongsToCurrentUser);
     const count = notifications.length;
 
     if (badgeElement) {
@@ -291,7 +432,7 @@ function renderConditionNotifications() {
 
     listElement.innerHTML = notifications.map((item) => `
         <div class="notification-item">
-            <p><strong>${item.name}</strong> (${item.plot}) grave condition changed from <strong>${item.oldCondition}</strong> to <strong>${item.newCondition}</strong>.</p>
+            <p><strong>${item.name}</strong> (${item.block}, ${item.plot}) grave condition changed from <strong>${item.oldCondition}</strong> to <strong>${item.newCondition}</strong>.</p>
             <span>${new Date(item.timestamp).toLocaleString()}</span>
         </div>
     `).join("");
@@ -322,6 +463,7 @@ function updateBurialDetails(record) {
     }
 
     if (!record) {
+        selectedBurialRecord = null;
         nameElement.textContent = "No matching record found";
         blockElement.textContent = "-";
         plotElement.textContent = "-";
@@ -329,6 +471,8 @@ function updateBurialDetails(record) {
         statusElement.textContent = "Not found";
         return;
     }
+
+    selectedBurialRecord = record;
 
     nameElement.textContent = record.name;
     blockElement.textContent = record.block;
@@ -350,6 +494,32 @@ function createCemeteryLocationIcon() {
     });
 }
 
+function createStatusIcon(status) {
+    let color = "#94A3B8"; // Default gray
+    
+    if (status === "Available") {
+        color = "#22C55E"; // Green
+    } else if (status === "Occupied") {
+        color = "#DC2626"; // Red
+    } else if (status === "Reserved") {
+        color = "#FACC15"; // Yellow
+    }
+    
+    return L.divIcon({
+        html: `<div style="
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: ${color};
+            border: 3px solid #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        "></div>`,
+        className: "",
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+    });
+}
+
 function renderBurialMarkers(map, layerGroup, records) {
     if (!map || !layerGroup) {
         return;
@@ -362,7 +532,8 @@ function renderBurialMarkers(map, layerGroup, records) {
             return;
         }
 
-        const marker = L.marker([record.lat, record.lng]).addTo(layerGroup);
+        const icon = createStatusIcon(record.status);
+        const marker = L.marker([record.lat, record.lng], { icon: icon }).addTo(layerGroup);
 
         marker.bindPopup(`<strong>${record.name}</strong><br>${record.block} • Plot ${record.plot}<br>Status: ${record.status}`);
         marker.on("click", () => {
@@ -410,15 +581,15 @@ function initializeMap() {
     }).setView([14.8829944, 120.8613913], 20);
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 22,
-        attribution: "&copy; OpenStreetMap contributors"
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors'
     }).addTo(cemeteryMap);
 
     cemeteryMarkersLayer = L.layerGroup().addTo(cemeteryMap);
     cemeteryLocationMarker = L.marker(PLARIDEL_CEMETERY_COORDINATES, {
         icon: createCemeteryLocationIcon()
     }).addTo(cemeteryMap);
-    cemeteryLocationMarker.bindPopup("Plaridel Cemetery<br>Philippines");
+    cemeteryLocationMarker.bindPopup("St. James Memorial Park<br>Philippines");
 
     setTimeout(() => {
         cemeteryMap.invalidateSize();
@@ -427,6 +598,57 @@ function initializeMap() {
 
     renderMapMarkers();
     focusBurialOnMap(burialRecords[0]);
+
+    const locationButton = document.getElementById("useUserCurrentLocationBtn");
+    const accuracyElement = document.getElementById("userGpsAccuracy");
+    if (locationButton) {
+        locationButton.addEventListener("click", () => {
+            if (!navigator.geolocation) {
+                if (accuracyElement) accuracyElement.textContent = "GPS is not available in this browser.";
+                return;
+            }
+
+            locationButton.disabled = true;
+            locationButton.textContent = "Finding location...";
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+
+                    if (userGpsMarker) {
+                        userGpsMarker.setLatLng([latitude, longitude]);
+                    } else {
+                        userGpsMarker = L.marker([latitude, longitude])
+                            .addTo(cemeteryMap)
+                            .bindPopup("Device GPS location");
+                    }
+
+                    cemeteryMap.setView([latitude, longitude], 20);
+
+                    const userLatitudeElement = document.getElementById("userLatitude");
+                    const userLongitudeElement = document.getElementById("userLongitude");
+                    if (userLatitudeElement) userLatitudeElement.textContent = latitude.toFixed(6);
+                    if (userLongitudeElement) userLongitudeElement.textContent = longitude.toFixed(6);
+
+                    if (accuracyElement) accuracyElement.textContent = `Estimated GPS accuracy: ${Math.round(accuracy)} meters`;
+                    locationButton.disabled = false;
+                    locationButton.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> Use My GPS Location';
+                },
+                (error) => {
+                    if (accuracyElement) accuracyElement.textContent = `Unable to get location: ${error.message}`;
+                    locationButton.disabled = false;
+                    locationButton.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> Use My GPS Location';
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        });
+    }
 }
 
 function initializeAdminMap() {
@@ -447,15 +669,15 @@ function initializeAdminMap() {
     }).setView([14.8829944, 120.8613913], 20);
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 22,
-        attribution: "&copy; OpenStreetMap contributors"
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors'
     }).addTo(adminMap);
 
     adminMarkersLayer = L.layerGroup().addTo(adminMap);
     cemeteryLocationMarker = L.marker(PLARIDEL_CEMETERY_COORDINATES, {
         icon: createCemeteryLocationIcon()
     }).addTo(adminMap);
-    cemeteryLocationMarker.bindPopup("Plaridel Cemetery<br>Philippines");
+    cemeteryLocationMarker.bindPopup("St. James Memorial Park<br>Philippines");
 
     adminMarker = L.marker(PLARIDEL_CEMETERY_COORDINATES).addTo(adminMap);
     adminMarker.bindPopup("Current cemetery coordinate");
@@ -480,6 +702,56 @@ function initializeAdminMap() {
             longitudeElement.textContent = center.lng.toFixed(6);
         }
     });
+
+    const locationButton = document.getElementById("useCurrentLocationBtn");
+    const accuracyElement = document.getElementById("gpsAccuracy");
+    if (locationButton) {
+        locationButton.addEventListener("click", () => {
+            if (!navigator.geolocation) {
+                if (accuracyElement) accuracyElement.textContent = "GPS is not available in this browser.";
+                return;
+            }
+
+            locationButton.disabled = true;
+            locationButton.textContent = "Finding location...";
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+
+                    if (adminGpsMarker) {
+                        adminGpsMarker.setLatLng([latitude, longitude]);
+                    } else {
+                        adminGpsMarker = L.marker([latitude, longitude])
+                            .addTo(adminMap)
+                            .bindPopup("Device GPS location");
+                    }
+
+                    adminMap.setView([latitude, longitude], 20);
+                    const latitudeElement = document.getElementById("adminLatitude");
+                    const longitudeElement = document.getElementById("adminLongitude");
+                    if (latitudeElement) latitudeElement.textContent = latitude;
+                    if (longitudeElement) longitudeElement.textContent = longitude;
+                    if (accuracyElement) accuracyElement.textContent = `Estimated GPS accuracy: ${Math.round(accuracy)} meters`;
+
+                    locationButton.disabled = false;
+                    locationButton.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> Use My GPS Location';
+                },
+                (error) => {
+                    if (accuracyElement) accuracyElement.textContent = `Unable to get location: ${error.message}`;
+                    locationButton.disabled = false;
+                    locationButton.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> Use My GPS Location';
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        });
+    }
 }
 
 function focusAdminRecord(record) {
@@ -634,6 +906,78 @@ function searchBurialRecord() {
     }
 }
 
+function navigateToSelectedGrave() {
+    const statusElement = document.getElementById("navigationStatus");
+    const navigateButton = document.getElementById("navigateToGraveBtn");
+    const record = selectedBurialRecord;
+
+    if (!record || !Number.isFinite(Number(record.lat)) || !Number.isFinite(Number(record.lng))) {
+        if (statusElement) statusElement.textContent = "Search for a grave with saved coordinates first.";
+        return;
+    }
+
+    if (!navigator.geolocation) {
+        if (statusElement) statusElement.textContent = "GPS is not available in this browser.";
+        return;
+    }
+
+    if (navigateButton) {
+        navigateButton.disabled = true;
+        navigateButton.textContent = "Finding your location...";
+    }
+    if (statusElement) statusElement.textContent = "Getting your current location...";
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+        const startLatitude = position.coords.latitude;
+        const startLongitude = position.coords.longitude;
+        const endLatitude = Number(record.lat);
+        const endLongitude = Number(record.lng);
+
+        if (userGpsMarker) {
+            userGpsMarker.setLatLng([startLatitude, startLongitude]);
+        } else {
+            userGpsMarker = L.marker([startLatitude, startLongitude])
+                .addTo(cemeteryMap)
+                .bindPopup("Your current location");
+        }
+
+        try {
+            const routeUrl = `https://router.project-osrm.org/route/v1/foot/${startLongitude},${startLatitude};${endLongitude},${endLatitude}?overview=full&geometries=geojson&steps=true`;
+            const response = await fetch(routeUrl);
+            const routeData = await response.json();
+            const route = routeData.routes && routeData.routes[0];
+
+            if (!route) throw new Error("No walking route was found.");
+            if (navigationRouteLayer) cemeteryMap.removeLayer(navigationRouteLayer);
+
+            const routeCoordinates = route.geometry.coordinates.map(([longitude, latitude]) => [latitude, longitude]);
+            navigationRouteLayer = L.polyline(routeCoordinates, { color: "#d97706", weight: 6, opacity: 0.85 }).addTo(cemeteryMap);
+            cemeteryMap.fitBounds(navigationRouteLayer.getBounds(), { padding: [30, 30] });
+
+            const distanceKm = (route.distance / 1000).toFixed(2);
+            const durationMinutes = Math.max(1, Math.round(route.duration / 60));
+            if (statusElement) statusElement.textContent = `Route to ${record.name || "the grave"}: ${distanceKm} km, about ${durationMinutes} min walking. GPS accuracy: ${Math.round(position.coords.accuracy)} m.`;
+        } catch (error) {
+            if (statusElement) statusElement.textContent = `Unable to create walking route: ${error.message}`;
+        } finally {
+            if (navigateButton) {
+                navigateButton.disabled = false;
+                navigateButton.innerHTML = '<i class="fa-solid fa-route"></i> Navigate to Grave';
+            }
+        }
+    }, (error) => {
+        if (statusElement) statusElement.textContent = `Unable to get location: ${error.message}`;
+        if (navigateButton) {
+            navigateButton.disabled = false;
+            navigateButton.innerHTML = '<i class="fa-solid fa-route"></i> Navigate to Grave';
+        }
+    }, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+    });
+}
+
 function toggleAddRecordModal(show) {
     const modal = document.getElementById("addRecordModal");
 
@@ -711,44 +1055,57 @@ function formatRelativeActivityTime(timestamp) {
     return `${diffDays} days ago`;
 }
 
+function getRecentBurialActivity() {
+    try {
+        return JSON.parse(localStorage.getItem(RECENT_BURIAL_ACTIVITY_KEY) || "[]");
+    } catch (error) {
+        console.warn("Unable to load recent burial activity:", error);
+        return [];
+    }
+}
+
+function saveRecentBurialActivity(activityItems) {
+    try {
+        localStorage.setItem(RECENT_BURIAL_ACTIVITY_KEY, JSON.stringify(activityItems));
+    } catch (error) {
+        console.warn("Unable to save recent burial activity:", error);
+    }
+}
+
+function addRecentBurialActivity(activity) {
+    const activities = getRecentBurialActivity();
+    const nextActivity = {
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        icon: activity.icon || "fa-solid fa-clock-rotate-left",
+        title: activity.title || "Burial Record Updated",
+        description: activity.description || "Burial record was updated.",
+        timestamp: activity.timestamp || Date.now()
+    };
+
+    const updatedActivities = [nextActivity, ...activities].slice(0, 8);
+    saveRecentBurialActivity(updatedActivities);
+    renderRecentBurialActivity();
+}
+
 function renderRecentBurialActivity() {
     const activityList = document.getElementById("recentBurialActivityList");
+    const notificationBadge = document.getElementById("notificationBadge");
+    const notificationButton = document.getElementById("notificationButton");
 
     if (!activityList) {
         return;
     }
 
-    const latestRecord = burialRecords[0];
-    const updatedRecord = burialRecords[1];
-    const mappedRecord = burialRecords[2];
+    const activities = getRecentBurialActivity();
 
-    const activities = [];
-
-    if (latestRecord) {
-        activities.push({
-            icon: "fa-solid fa-user-plus",
-            title: "New Burial Record Added",
-            description: `${latestRecord.name} • ${latestRecord.block} • Plot ${latestRecord.plot}`,
-            timestamp: Date.now() - 5 * 60000
-        });
+    if (notificationBadge) {
+        const count = activities.length;
+        notificationBadge.textContent = count > 0 ? count : "";
+        notificationBadge.style.display = count > 0 ? "inline-flex" : "none";
     }
 
-    if (updatedRecord) {
-        activities.push({
-            icon: "fa-solid fa-pen",
-            title: "Burial Record Updated",
-            description: `${updatedRecord.name} • ${updatedRecord.block} • Plot ${updatedRecord.plot}`,
-            timestamp: Date.now() - 2 * 60 * 60000
-        });
-    }
-
-    if (mappedRecord) {
-        activities.push({
-            icon: "fa-solid fa-map-location-dot",
-            title: "GIS Map Updated",
-            description: `${mappedRecord.block} • ${mappedRecord.plot} • ${mappedRecord.status}`,
-            timestamp: Date.now() - 24 * 60 * 60000
-        });
+    if (notificationButton) {
+        notificationButton.title = activities.length > 0 ? `${activities.length} recent updates` : "No recent updates";
     }
 
     if (activities.length === 0) {
@@ -1189,8 +1546,15 @@ async function deleteBurialRecord(recordId) {
 
     burialRecords = burialRecords.filter((item) => item.id !== recordId);
     await saveBurialRecords();
+    await deleteBurialRecordFromSupabase(recordId);
+
+    addRecentBurialActivity({
+        icon: "fa-solid fa-trash-can",
+        title: "Burial Record Removed",
+        description: `${record.name} • ${record.block} • Plot ${record.plot}`
+    });
+
     renderBurialRecordsTable();
-    renderRecentBurialActivity();
     renderMapMarkers();
     filterAdminRecords(document.getElementById("adminSearchInput")?.value || "");
     toggleAddRecordModal(false);
@@ -1242,7 +1606,7 @@ async function handleAddBurialRecord(event) {
             }
 
             if (oldCondition !== cleanliness) {
-                addGraveConditionNotification(existingRecord, oldCondition, cleanliness);
+                await addGraveConditionNotification(existingRecord, oldCondition, cleanliness);
             }
         }
     } else {
@@ -1263,6 +1627,14 @@ async function handleAddBurialRecord(event) {
 
     const updatedRecord = burialRecords.find((item) => item.id === recordId) || burialRecords[0];
 
+    if (updatedRecord) {
+        addRecentBurialActivity({
+            icon: activeRecordMode === "edit" ? "fa-solid fa-pen" : "fa-solid fa-user-plus",
+            title: activeRecordMode === "edit" ? "Burial Record Updated" : "New Burial Record Added",
+            description: `${updatedRecord.name || "Available Plot"} • ${updatedRecord.block} • Plot ${updatedRecord.plot}`
+        });
+    }
+
     if (updatedRecord && adminMarker) {
         adminMarker.setLatLng([updatedRecord.lat, updatedRecord.lng]);
         adminMarker.bindPopup(`<strong>${updatedRecord.name}</strong><br>${updatedRecord.block} • Plot ${updatedRecord.plot}`);
@@ -1276,7 +1648,6 @@ async function handleAddBurialRecord(event) {
     }
 
     renderBurialRecordsTable();
-    renderRecentBurialActivity();
     renderMapMarkers();
     filterAdminRecords(document.getElementById("adminSearchInput")?.value || "");
     resetRecordForm();
@@ -1288,6 +1659,7 @@ function initializeBurialSearch() {
     const searchButton = document.getElementById("searchBurialBtn");
     const searchInput = document.getElementById("burialSearchInput");
     const notificationButton = document.getElementById("notificationButton");
+    const navigateButton = document.getElementById("navigateToGraveBtn");
 
     initializeMap();
     const initialRecord = burialRecords[0];
@@ -1299,6 +1671,10 @@ function initializeBurialSearch() {
 
     if (searchButton) {
         searchButton.addEventListener("click", searchBurialRecord);
+    }
+
+    if (navigateButton) {
+        navigateButton.addEventListener("click", navigateToSelectedGrave);
     }
 
     if (notificationButton) {
@@ -1328,6 +1704,16 @@ function initializeAdminDashboard() {
     const cancelButton = document.getElementById("cancelAddRecordBtn");
     const form = document.getElementById("addBurialRecordForm");
     const searchInput = document.getElementById("adminSearchInput");
+    const notificationButton = document.getElementById("notificationButton");
+
+    if (notificationButton) {
+        notificationButton.addEventListener("click", () => {
+            const activitySection = document.querySelector(".activity-section");
+            if (activitySection) {
+                activitySection.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        });
+    }
 
     if (openButton) {
         openButton.addEventListener("click", () => toggleAddRecordModal(true));
